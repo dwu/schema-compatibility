@@ -1,0 +1,20 @@
+description: Change int to float
+check:
+  compatibility: "BACKWARD"
+  compatible: false
+schema:
+  type: "PROTOBUF"
+  writer: |
+    syntax = "proto3";
+    message SearchRequest {
+      string query = 1;
+      int32 page_number = 2;
+      int32 results_per_page = 3;
+    }
+  reader: |
+    syntax = "proto3";
+    message SearchRequest {
+      string query = 1;
+      float page_number = 2;
+      int32 results_per_page = 3;
+    }
