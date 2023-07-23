@@ -91,6 +91,9 @@ for (let schematype in results) {
     for (let result of results[schematype][compatible]) {
       fs.writeSync(fdOutput, resultHeading(result));
       writeResult(result, fdOutput);
+      if (result.messages.length > 0) {
+        fs.writeSync(fdOutput, `<p><b>Messages:</b>${result.messages}</p>`);
+      }
     }
   }
 }
