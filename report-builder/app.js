@@ -98,4 +98,5 @@ for (let schematype in results) {
   }
 }
 
+fs.writeSync(fdOutput, `<p style="font-size: 90%; margin: .2em; color: #666666; text-align: right; padding-top: 10px;">Last modified at: ${new Date().toISOString()}</p>`)
 fs.writeSync(fdOutput, SUFFIX);
