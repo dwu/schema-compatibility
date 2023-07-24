@@ -78,7 +78,6 @@ public class App {
         Options options = new Options();
         options.addOption("f", "file", true, "Schema compatibilty test case description file");
         options.addOption("d", "directory", true, "Directory containing schema compatibility test case description files (scanned recursively)");
-        options.addOption("r", "reportfile", true, "Name of HTML report file for test results");
         options.addOption("h", "help", false, "Show help");
 
         CommandLineParser parser = new DefaultParser();
