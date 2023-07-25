@@ -3,8 +3,8 @@ package io.github.dwu.schemacompatibility.desc;
 public class Schema {
 
     private String type;
-    private String writer;
-    private String reader;
+    private String oldschema;
+    private String newschema;
 
     public String getType() {
         return type;
@@ -14,19 +14,19 @@ public class Schema {
         this.type = type;
     }
 
-    public String getWriter() {
-        return writer;
+    public String getOldschema() {
+        return oldschema;
     }
 
-    public void setWriter(String writer) {
-        this.writer = writer;
+    public void setOldschema(String oldschema) {
+        this.oldschema = oldschema;
     }
 
-    public String getReader() {
-        return reader;
+    public String getNewschema() {
+        return newschema;
     }
 
-    public void setReader(String reader) {
-        this.reader = reader;
+    public void setNewschema(String newschema) {
+        this.newschema = newschema;
     }
 }

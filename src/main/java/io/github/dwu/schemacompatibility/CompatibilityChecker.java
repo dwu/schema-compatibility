@@ -31,10 +31,10 @@ public class CompatibilityChecker {
     public CompatibilityCheckResult checkCase(Case c) throws InvalidSchemaException {
         CompatibilityLevel compatibiltyLevel = CompatibilityLevel.valueOf(c.getCheck().getCompatibility());
         String schemaType = c.getSchema().getType();
-        String writerSchemaString = c.getSchema().getWriter();
-        String readerSchemaString = c.getSchema().getReader();
+        String oldschemaString = c.getSchema().getOldschema();
+        String newschemaString = c.getSchema().getNewschema();
 
-        List<String> checkResult = checkSchemaCompatibility(schemaType, compatibiltyLevel, writerSchemaString, readerSchemaString);
+        List<String> checkResult = checkSchemaCompatibility(schemaType, compatibiltyLevel, oldschemaString, newschemaString);
 
         CompatibilityCheckResult result = new CompatibilityCheckResult();
         result.setCompatibilityLevel(compatibiltyLevel);
@@ -48,17 +48,17 @@ public class CompatibilityChecker {
         return result;
     }
 
-    public List<String> checkSchemaCompatibility(String schemaType, CompatibilityLevel compatibilityLevel, String writerSchemaString, String readerSchemaString) throws InvalidSchemaException {
+    public List<String> checkSchemaCompatibility(String schemaType, CompatibilityLevel compatibilityLevel, String oldschemaString, String newschemaString) throws InvalidSchemaException {
         SchemaProvider schemaProvider = schemaProviderMap.get(schemaType);
 
-        Optional<ParsedSchema> writerSchema = schemaProvider.parseSchema(writerSchemaString, Collections.emptyList());
-        Optional<ParsedSchema> readerSchema = schemaProvider.parseSchema(readerSchemaString, Collections.emptyList());
+        Optional<ParsedSchema> oldschema = schemaProvider.parseSchema(oldschemaString, Collections.emptyList());
+        Optional<ParsedSchema> newschema = schemaProvider.parseSchema(newschemaString, Collections.emptyList());
 
-        if (!(writerSchema.isPresent() && readerSchema.isPresent())) {
+        if (!(oldschema.isPresent() && newschema.isPresent())) {
             throw new InvalidSchemaException();
         }
 
-        return readerSchema.get().isCompatible(compatibilityLevel, Collections.singletonList(new SimpleParsedSchemaHolder(writerSchema.get())));
+        return newschema.get().isCompatible(compatibilityLevel, Collections.singletonList(new SimpleParsedSchemaHolder(oldschema.get())));
     }
 
 }

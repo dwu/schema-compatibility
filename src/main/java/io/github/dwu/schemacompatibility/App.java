@@ -56,8 +56,8 @@ public class App {
         result.addProperty("got", compatibilityCheckResult.isCompatible() ? "COMPATIBLE" : "NOT_COMPATIBLE");
         result.addProperty("compatibility", caseDescription.getCheck().getCompatibility());
         result.addProperty("schematype", caseDescription.getSchema().getType());
-        result.addProperty("writerschema", caseDescription.getSchema().getWriter());
-        result.addProperty("readerschema", caseDescription.getSchema().getReader());
+        result.addProperty("oldschema", caseDescription.getSchema().getOldschema());
+        result.addProperty("newschema", caseDescription.getSchema().getNewschema());
 
         JsonArray messages = new JsonArray();
         for (String message : compatibilityCheckResult.getMessages()) {

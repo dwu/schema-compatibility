@@ -4,14 +4,14 @@ check:
   compatible: false
 schema:
   type: "PROTOBUF"
-  writer: |
+  oldschema: |
     syntax = "proto3";
     message SearchRequest {
       string query = 1;
       int32 page_number = 2;
       int32 results_per_page = 3;
     }
-  reader: |
+  newschema: |
     syntax = "proto3";
     message SearchRequest {
       string query = 1;

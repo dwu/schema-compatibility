@@ -28,16 +28,16 @@ const SUFFIX = `
 `;
 
 function writeResult(result, fdOutput) {
-  const fdWriterName = path.join(TMP_DIR, "writer")
-  const fdWriter = fs.openSync(fdWriterName, "w");
-  fs.writeSync(fdWriter, result.writerschema);
+  const fdOldschemaName = path.join(TMP_DIR, "oldschema")
+  const fdOldschema = fs.openSync(fdOldschemaName, "w");
+  fs.writeSync(fdOldschema, result.oldschema);
 
-  const fdReaderName = path.join(TMP_DIR, "reader");
-  const fdReader = fs.openSync(fdReaderName, "w");
-  fs.writeSync(fdReader, result.readerschema);
+  const fdNewschemaName = path.join(TMP_DIR, "newschema");
+  const fdNewschema = fs.openSync(fdNewschemaName, "w");
+  fs.writeSync(fdNewschema, result.newschema);
 
   try {
-    execSync(`diff -uZ ${fdWriterName} ${fdReaderName}`);
+    execSync(`diff -uZ ${fdOldschemaName} ${fdNewschemaName}`);
     // files are the same, do nothing
   } catch (err) {
     // files are different
@@ -57,7 +57,7 @@ function resultHeading(result) {
     color = "#BBFFBB";
   }
 
-  return `\n<h3 style="background: ${color}">${result.expected} | ${result.description} | ${result.testcase}</h3>\n`
+  return `\n<h3 style="background: ${color}">${result.expected} | ${result.compatibility} | ${result.description} | ${result.testcase}</h3>\n`
 }
 
 if (!fs.existsSync(TMP_DIR)) {
