@@ -75,20 +75,20 @@ for (let line of lines) {
   if (line.length == 0)
     continue;
 
-    let result = JSON.parse(line);
-    if (!(result.schematype in results)) {
-      results[result.schematype] = new Map();
-    }
-    if (!(result.expected in results[result.schematype])) {
-      results[result.schematype][result.expected] = new Array();
-    }
-    results[result.schematype][result.expected].push(result);
+  let result = JSON.parse(line);
+  if (!results.has(result.schematype)) {
+    results.set(result.schematype, new Map());
+  }
+  if (!results.get(result.schematype).has(result.expected)) {
+    results.get(result.schematype).set(result.expected, new Array());
+  }
+  results.get(result.schematype).get(result.expected).push(result);
 }
 
-for (let schematype in results) {
+for (let schematype of Array.from(results.keys()).sort()) {
   fs.writeSync(fdOutput, `\n<h2 style="background: #BBBBFF">${schematype}</h2>\n`);
-  for (let compatible in results[schematype]) {
-    for (let result of results[schematype][compatible]) {
+  for (let compatiblekey of ["COMPATIBLE", "NOT_COMPATIBLE"]) {
+    for (let result of results.get(schematype).get(compatiblekey)) {
       fs.writeSync(fdOutput, resultHeading(result));
       writeResult(result, fdOutput);
       if (result.messages.length > 0) {
