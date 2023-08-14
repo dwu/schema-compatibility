@@ -37,6 +37,7 @@ public class App {
                         String lcp = p.getFileName().toString().toLowerCase();
                         return lcp.endsWith(".yml") || lcp.endsWith(".yaml");
                     })
+                    .sorted()
                     .forEach(p -> {
                         try {
                             checkCaseFile(p.toString());
