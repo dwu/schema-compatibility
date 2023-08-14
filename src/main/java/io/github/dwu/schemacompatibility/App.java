@@ -24,6 +24,11 @@ public class App {
 
     private final Gson gson = new GsonBuilder().create();
     private final CompatibilityChecker compatibilityChecker = new CompatibilityChecker();
+    private ResultFormatter resultFormatter = null;
+
+    public App(ResultFormatter resultFormatter) {
+        this.resultFormatter = resultFormatter;
+    }
 
     public void checkCaseDirectory(String caseDirectory) throws InvalidSchemaException, IOException {
         try (Stream<Path> stream = Files.walk(Paths.get(caseDirectory))) {
@@ -48,34 +53,21 @@ public class App {
         Case caseDescription = yaml.load(inputStream);
 
         CompatibilityCheckResult compatibilityCheckResult = compatibilityChecker.checkCase(caseDescription);
-        JsonObject result = new JsonObject();
-        result.addProperty("success", compatibilityCheckResult.isSuccess());
-        result.addProperty("testcase", caseFile);
-        result.addProperty("description", caseDescription.getDescription());
-        result.addProperty("expected", caseDescription.getCheck().isCompatible() ? "COMPATIBLE" : "NOT_COMPATIBLE");
-        result.addProperty("got", compatibilityCheckResult.isCompatible() ? "COMPATIBLE" : "NOT_COMPATIBLE");
-        result.addProperty("compatibility", caseDescription.getCheck().getCompatibility());
-        result.addProperty("schematype", caseDescription.getSchema().getType());
-        result.addProperty("oldschema", caseDescription.getSchema().getOldschema());
-        result.addProperty("newschema", caseDescription.getSchema().getNewschema());
 
-        JsonArray messages = new JsonArray();
-        for (String message : compatibilityCheckResult.getMessages()) {
-            messages.add(message);
-        }
-        result.add("messages", messages);
-
-        System.out.println(gson.toJson(result));
+        System.out.println(resultFormatter.format(caseFile, caseDescription, compatibilityCheckResult));
 
         if (!compatibilityCheckResult.isSuccess()) {
             System.exit(1);
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        App app = new App();
+    public void setResultFormatter(ResultFormatter resultFormatter) {
+        this.resultFormatter = resultFormatter;
+    }
 
+    public static void main(String[] args) throws Exception {
         Options options = new Options();
+        options.addOption("j", "json", false, "Show result in JSON format for further processing");
         options.addOption("f", "file", true, "Schema compatibilty test case description file");
         options.addOption("d", "directory", true, "Directory containing schema compatibility test case description files (scanned recursively)");
         options.addOption("h", "help", false, "Show help");
@@ -86,6 +78,13 @@ public class App {
         if (cli.hasOption("f") && cli.hasOption("d")) {
             System.err.println("ERROR: Only one of 'file' and 'path' arguments may be specified");
             printHelpAndExit(options);
+        }
+
+        App app;
+        if (cli.hasOption("j")) {
+            app = new App(new JsonResultFormatter());
+        } else {
+            app = new App(new PlaintextResultFormatter());
         }
 
         CompatibilityCheckResult compatibilityCheckResult = null;

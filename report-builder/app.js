@@ -69,7 +69,7 @@ fs.writeSync(fdOutput, PREFIX);
 
 const results = new Map();
 
-let stdout = execSync(`java -jar ${process.env.JARFILE} -d ${process.env.TESTS}`);
+let stdout = execSync(`java -jar ${process.env.JARFILE} -j -d ${process.env.TESTS}`);
 let lines = stdout.toString().split("\n");
 for (let line of lines) {
   if (line.length == 0)

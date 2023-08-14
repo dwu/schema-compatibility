@@ -5,7 +5,7 @@ This application allows checking schema compatibility for Avro, ProtoBuf and JSO
 This compatibility check is performed
 using [Confluent's Schema Registry](https://github.com/confluentinc/schema-registry).
 
-Schema compatibilty test inputs are described in a test descriptor.
+Schema compatibility test inputs are described in a test descriptor.
 
 ## Test Descriptor Example
 
@@ -40,7 +40,7 @@ schema:
     }
 ```
 
-The result of the compatibility test execution is printed in JSON format with the following properties:
+The result of the compatibility test execution is sent to stdout either in JSON or plaintext format with the following properties:
 
 - `success` (bool): Whether the compatibility test result matches the expected result
 - `testcase` (string): Name of the file with the test description
@@ -66,12 +66,52 @@ usage: schema-compatibility
                         case description files (scanned recursively)
  -f,--file <arg>        Schema compatibilty test case description file
  -h,--help              Show help
+ -j,--json              Show result in JSON format for further processing
 ```
 
-Usage example:
+Usage example (plaintext output):
 
 ```shell
-$ java -jar target/schema-compatibility-1.0-SNAPSHOT-jar-with-dependencies.jar -d ./src/test/resources
+$ java -jar target/schema-compatibility-1.0-SNAPSHOT-jar-with-dependencies.jar -f src/test/resources/avro-not-backward-compatible.yml
+
+Success: true
+Testcase: src/test/resources/avro-not-backward-compatible.yml
+Description: Change long to int
+Expected: NOT_COMPATIBLE
+Got: NOT_COMPATIBLE
+Compatibility: BACKWARD
+Schema type: AVRO
+
+Old schema:
+-----------
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number",  "type": ["long", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+
+
+New schema:
+-----------
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number",  "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+```
+
+Usage example (JSON output):
+
+```shell
+$ java -jar target/schema-compatibility-1.0-SNAPSHOT-jar-with-dependencies.jar -j -d ./src/test/resources
 {"success":true,"expected":"NOT_COMPATIBLE","got":"NOT_COMPATIBLE","compatibility":"BACKWARD","oldschema":"{\"namespace\": \"example.avro\",\n \"type\": \"record\",\n \"name\": \"User\",\n \"fields\": [\n     {\"name\": \"name\", \"type\": \"string\"},\n     {\"name\": \"favorite_number\",  \"type\": [\"long\", \"null\"]},\n     {\"name\": \"favorite_color\", \"type\": [\"string\", \"null\"]}\n ]\n}\n","newschema":"{\"namespace\": \"example.avro\",\n \"type\": \"record\",\n \"name\": \"User\",\n \"fields\": [\n     {\"name\": \"name\", \"type\": \"string\"},\n     {\"name\": \"favorite_number\",  \"type\": [\"int\", \"null\"]},\n     {\"name\": \"favorite_color\", \"type\": [\"string\", \"null\"]}\n ]\n}","messages":["{errorType:\u0027MISSING_UNION_BRANCH\u0027, description:\u0027The new schema is missing a type inside a union field at path \u0027/fields/1/type/0\u0027 in the old schema\u0027, additionalInfo:\u0027reader union lacking writer type: LONG\u0027}"]}
 {"success":true,"expected":"NOT_COMPATIBLE","got":"NOT_COMPATIBLE","compatibility":"BACKWARD","oldschema":"syntax \u003d \"proto3\";\nmessage SearchRequest {\n  string query \u003d 1;\n  int32 page_number \u003d 2;\n  int32 results_per_page \u003d 3;\n}\n","newschema":"syntax \u003d \"proto3\";\nmessage SearchRequest {\n  string query \u003d 1;\n  float page_number \u003d 2;\n  int32 results_per_page \u003d 3;\n}","messages":["{errorType:\"FIELD_SCALAR_KIND_CHANGED\", description:\"The kind of a SCALAR field at path \u0027#/SearchRequest/2\u0027 in the new schema does not match its kind in the old schema\"}"]}
 ```
