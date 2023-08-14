@@ -28,7 +28,7 @@ const SUFFIX = `
 `;
 
 function writeResult(result, fdOutput) {
-  const fdOldschemaName = path.join(TMP_DIR, "oldschema")
+  const fdOldschemaName = path.join(TMP_DIR, "oldschema");
   const fdOldschema = fs.openSync(fdOldschemaName, "w");
   fs.writeSync(fdOldschema, result.oldschema);
 
@@ -57,7 +57,7 @@ function resultHeading(result) {
     color = "#BBFFBB";
   }
 
-  return `\n<h3 style="background: ${color}">${result.expected} | ${result.compatibility} | ${result.description} | ${result.testcase}</h3>\n`
+  return `\n<h3 style="background: ${color}">${result.expected} | ${result.compatibility} | ${result.description} | ${result.testcase}</h3>\n`;
 }
 
 if (!fs.existsSync(TMP_DIR)) {
@@ -98,5 +98,5 @@ for (let schematype in results) {
   }
 }
 
-fs.writeSync(fdOutput, `<p style="font-size: 90%; margin: .2em; color: #666666; text-align: right; padding-top: 10px;">Last modified at: ${new Date().toISOString()}</p>`)
+fs.writeSync(fdOutput, `<p style="font-size: 90%; margin: .2em; color: #666666; text-align: right; padding-top: 10px;">Last modified at: ${new Date().toISOString()}</p>`);
 fs.writeSync(fdOutput, SUFFIX);
